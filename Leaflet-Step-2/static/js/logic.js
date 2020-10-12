@@ -1,5 +1,5 @@
 //Visualize an Earthquake map using earthquake dataset
-
+//declare a funtion to create map for Earthquakes and Tectoniplates
 function createMap(earthquakes, tectoniplates) {
 
   // Create our map, giving it the streetmap and earthquakes layers to display on load
@@ -10,20 +10,24 @@ function createMap(earthquakes, tectoniplates) {
     accessToken: API_KEY
   });
 
-  var grayscalemap = L.tileLayer("https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token={accessToken}", {
-      attribution: "Map data &copy; <a href=\"https://www.openstreetmap.org/\">OpenStreetMap</a> contributors, <a href=\"https://creativecommons.org/licenses/by-sa/2.0/\">CC-BY-SA</a>, Imagery © <a href=\"https://www.mapbox.com/\">Mapbox</a>",
-      maxZoom: 18,
-      id: "mapbox.light",
-      accessToken: API_KEY
+  var grayscalemap = L.tileLayer("https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token={accessToken}", {
+  attribution: "© <a href='https://www.mapbox.com/about/maps/'>Mapbox</a> © <a href='http://www.openstreetmap.org/copyright'>OpenStreetMap</a> <strong><a href='https://www.mapbox.com/map-feedback/' target='_blank'>Improve this map</a></strong>",
+    tileSize: 512,
+    maxZoom: 18,
+    zoomOffset: -1,
+    id: "mapbox/light-v10",
+    accessToken: API_KEY
   });
 
-  var outdoorsmap = L.tileLayer("https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token={accessToken}", {
-    attribution: "Map data &copy; <a href=\"https://www.openstreetmap.org/\">OpenStreetMap</a> contributors, <a href=\"https://creativecommons.org/licenses/by-sa/2.0/\">CC-BY-SA</a>, Imagery © <a href=\"https://www.mapbox.com/\">Mapbox</a>",
+  var outdoorsmap = L.tileLayer("https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token={accessToken}", {
+    attribution: "© <a href='https://www.mapbox.com/about/maps/'>Mapbox</a> © <a href='http://www.openstreetmap.org/copyright'>OpenStreetMap</a> <strong><a href='https://www.mapbox.com/map-feedback/' target='_blank'>Improve this map</a></strong>",
+    tileSize: 512,
     maxZoom: 18,
-    id: "mapbox.outdoors",
+    zoomOffset: -1,
+    id: "mapbox/outdoors-v11",
     accessToken: API_KEY
-  }); 
- 
+});
+  // Create map object and set default layers 
   var myMap = L.map("mapid", {
     center: [
       40.7, -94.5
@@ -31,8 +35,7 @@ function createMap(earthquakes, tectoniplates) {
     zoom: 4,
     layers: [satellitemap,grayscalemap, outdoorsmap ]
   });
-// default gray map upon initialization  
-  //grayscalemap.addTo(myMap);
+
 
   // crate a basemap
     var basemaps = {
@@ -84,7 +87,7 @@ function createMap(earthquakes, tectoniplates) {
     return div;
   };
 
-    // Finally, add legend to the map.
+  // Finally, add legend to the map.
   legend.addTo(myMap);  
 }  
 
@@ -150,7 +153,7 @@ var queryUrl = "https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_mo
 
   style: styleInfo,  
 
- // GeoJSON layer
+ // add tooltip 
   onEachFeature: function(feature, layer) {
     layer.bindPopup("<h1> Magnitude:" + feature.properties.mag + "</h1><br> Location: " + feature.properties.place );
     }
@@ -171,7 +174,7 @@ var queryUrl = "https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_mo
   }
 
 });
-
+// get the tecnotiplates data from reference
 var queryUrl1 = "https://raw.githubusercontent.com/fraxen/tectonicplates/master/GeoJSON/PB2002_boundaries.json";
 
   //  GET color radius call to the query URL
