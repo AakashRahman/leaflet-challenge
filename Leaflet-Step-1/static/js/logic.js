@@ -19,13 +19,13 @@ var streetmap = L.tileLayer("https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}
   accessToken: API_KEY
 }).addTo(myMap);
 
-// Store our API endpoint
+// grap the json data and Store our API endpoint
 
 var queryUrl = "https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_month.geojson";
 
 //  GET color radius call to the query URL
 d3.json(queryUrl, function(data) {
-  //console.log(data);
+  console.log(data);
   function styleInfo(feature) {
   return {
     opacity: 1,
@@ -38,18 +38,18 @@ d3.json(queryUrl, function(data) {
   }
 }
 
-  // // set different color from magnitude
-  function getColor(magnitude) {
+  // // set different color from depth
+  function getColor(depth) {
     switch (true) {
-    case magnitude > 5:
+    case depth > 90:
       return "#ea2c2c";
-    case magnitude > 4:
+    case depth > 70:
       return "#ea822c";
-    case magnitude > 3:
+    case depth > 50:
       return "#ee9c00";
-    case magnitude > 2:
+    case depth > 30:
       return "#eecc00";
-    case magnitude > 1:
+    case depth > 10:
       return "#d4ee00";
     default:
       return "#98ee00";
@@ -61,11 +61,11 @@ d3.json(queryUrl, function(data) {
       return 1;
     }
 
-    return magnitude * 5;
+    return magnitude * 3;
   }
   //   // GeoJSON layer
     L.geoJson(data, {
-      // Maken cricles
+      // create cricles
       pointToLayer: function(feature, latlng) {
         return L.circleMarker(latlng);
       },
@@ -73,28 +73,27 @@ d3.json(queryUrl, function(data) {
       style: styleInfo,
       // bind popup for each marker
       onEachFeature: function(feature, layer) {
-        layer.bindPopup("<h1>  Magnitude:  " + feature.properties.mag + "</h1><br> <h1>Location: " + feature.properties.place +"</h1>");
+        layer.bindPopup("<h1> Magnitude:" + feature.properties.mag + "</h1><br> Location: " + feature.properties.place );
       }
     }).addTo(myMap);
   
-  // add an object legend
+  // add legend on the map
     var legend = L.control({position: "bottomright"});
   
     // details for legend
     legend.onAdd = function() {
       var div = L.DomUtil.create("div", "info legend");
-      var grades = [0, 1, 2, 3, 4, 5];
-      var colors = ["#98ee00","#d4ee00","#eecc00","#ee9c00","#ea822c","#ea2c2c"];
-  
-  //     // Looping through
-      for (var i = 0; i < grades.length; i++) {
+          depth = [-10, 10, 30, 50, 70, 90];
+        
+      // Looping throug our destiny interval and generate label with color for each interval
+      for (var i = 0; i < depth.length; i++) {
         div.innerHTML +=
-          "<i style='background: " + colors[i] + "'></i> " +
-          grades[i] + (grades[i + 1] ? "&ndash;" + grades[i + 1] + "<br>" : "+");
+          '<i style="background: ' + getColor(depth[i]+1) + '"></i> ' +
+          depth[i] + (depth[i + 1]? '&ndash;' + depth[i + 1] + '<br>' : '+');
       }
       return div;
     };
   
-    // Finally, our legend to the map.
+    // Finally, add legend to the map.
     legend.addTo(myMap);
   });
